@@ -1,0 +1,6 @@
+package: pdf_generator
+import:
+- package: github.com/jung-kurt/gofpdf
+  version: v1.0.0
+- package: github.com/go-redis/redis
+  version: v6.14.2

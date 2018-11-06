@@ -1,0 +1,7 @@
+# filename: config.toml
+
+pdfFilePath = "files/"
+redisServer = "localhost"
+redisPort = "6379"
+redisChannel1 = "finished_order"
+#https://jonathanmh.com/golang-toml-configs-example-mysql-connection/
