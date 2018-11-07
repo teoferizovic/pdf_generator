@@ -23,9 +23,13 @@ func GenerateMsg(msg string,pdfFilePath string)  error{
 	pdf.AddPage()
 	pdf.SetFont("Arial", "B", 16)
 	pdf.Cell(40, 10, "OrderId:"+orderId)
+	pdf.Ln(10);
 	pdf.Cell(40, 10, "UserId:"+strconv.FormatInt(order.User_id, 10))
+	pdf.Ln(10);
 	pdf.Cell(40, 10, "Status:"+order.Status)
+	pdf.Ln(10);
 	pdf.Cell(40, 10, "Final price:"+strconv.FormatFloat(order.Final_price, 'f', 6, 64))
+	pdf.Ln(10);
 	pdf.Cell(40, 10, "Created:"+order.Created_at)
 
 	err = pdf.OutputFileAndClose(pdfFilePath+"order"+orderId+".pdf")
