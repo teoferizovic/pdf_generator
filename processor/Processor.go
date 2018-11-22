@@ -3,13 +3,14 @@ package processor
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/jung-kurt/gofpdf"
 	"net/http"
 	"pdf_generator/model"
 	"strconv"
 )
 
-func GenerateMsg(msg string,pdfFilePath string)  error{
+func PdfGenerate(msg string,conf model.Config)  error{
 
 	var order model.Order
 
@@ -19,11 +20,22 @@ func GenerateMsg(msg string,pdfFilePath string)  error{
 		return err
 	}
 
-	err = PostRequest(order)
+	err = PostRequest(order,conf.ExternalPostPath)
 
 	if err != nil {
 		return err
 	}
+
+	err = GeneratePdfFile(order,conf.PdfFilePath)
+
+	if err != nil{
+		return err
+	}
+
+	return nil
+}
+
+func GeneratePdfFile(order model.Order, pdfFilePath string) error {
 
 	orderId := strconv.FormatInt(order.Id, 10)
 
@@ -40,7 +52,7 @@ func GenerateMsg(msg string,pdfFilePath string)  error{
 	pdf.Ln(10);
 	pdf.Cell(40, 10, "Created:"+order.Created_at)
 
-	err = pdf.OutputFileAndClose(pdfFilePath+"order"+orderId+".pdf")
+	err := pdf.OutputFileAndClose(pdfFilePath+"order"+orderId+".pdf")
 
 	if err != nil{
 		return err
@@ -49,12 +61,10 @@ func GenerateMsg(msg string,pdfFilePath string)  error{
 	return nil
 }
 
-func PostRequest(order model.Order) error {
-
-	url := "http://127.0.0.1:8000/forder/create"
+func PostRequest(order model.Order,externalPostPath string) error {
 
 	var jsonStr = []byte(`{"user_id":`+strconv.FormatInt(order.User_id, 10)+`,"order_id":`+strconv.FormatInt(order.Id, 10)+`,"payment_id":1,"final_price":`+strconv.FormatFloat(order.Final_price, 'f', 2, 64)+`,"created_at":"`+order.Created_at+`"}`)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", externalPostPath, bytes.NewBuffer(jsonStr))
 	req.Header.Set("X-Custom-Header", "myvalue")
 	req.Header.Set("Content-Type", "application/json")
 
@@ -66,15 +76,11 @@ func PostRequest(order model.Order) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.Status == "201" {
-		return nil
+	if resp.Status != "201 Created" {
+		return errors.New("Server error")
 	}
 
-	return err
+	return nil
 
-	//fmt.Println("response Status:", resp.Status)
-	/*fmt.Println("response Headers:", resp.Header)*/
-	//body, _ := ioutil.ReadAll(resp.Body)
-	//fmt.Println("response Body:", string(body))
 }
 

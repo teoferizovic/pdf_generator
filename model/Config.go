@@ -5,4 +5,5 @@ type Config struct {
 	RedisServer string
 	RedisPort string
 	RedisChannel1 string
+	ExternalPostPath string
 }

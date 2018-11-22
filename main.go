@@ -38,7 +38,7 @@ func main() {
 	for {
 		msg, _ := psNewMessage.ReceiveMessage()
 			//fmt.Println(msg.Payload)
-			err := processor.GenerateMsg(msg.Payload,conf.PdfFilePath)
+			err := processor.PdfGenerate(msg.Payload,conf)
 			if err != nil {
 				panic(err)
 			}

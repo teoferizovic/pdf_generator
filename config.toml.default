@@ -4,4 +4,5 @@ pdfFilePath = "files/"
 redisServer = "localhost"
 redisPort = "6379"
 redisChannel1 = "finished_order"
+externalPostPath = "http://127.0.0.1:8000/forder/create"
 #https://jonathanmh.com/golang-toml-configs-example-mysql-connection/
